@@ -58,7 +58,12 @@ class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
     }
 
     private fun createList(model: DefaultListModel<DockerVolume>): JBList<DockerVolume> {
-        model.addAll(volumesList())
+        /*
+            For some unknown for me reason I can't use model.addAll in this place,
+            because of failed build in github with "type mismatch" error, but in my
+            machine (MacOS) everything looks OK.
+         */
+        volumesList().forEach { model.addElement(it) }
         return JBList(model)
     }
 
@@ -78,7 +83,8 @@ class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
 
     private fun refreshList() {
         myListModel.clear()
-        myListModel.addAll(volumesList())
+        // see comment in createList function
+        volumesList().forEach { myListModel.addElement(it) }
     }
 
     private fun notifyAboutError(exception: Exception, project: Project?) {
