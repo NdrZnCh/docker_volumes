@@ -1,19 +1,29 @@
 <idea-plugin>
-    <id>org.jetbrains.plugins.template</id>
-    <name>Template</name>
-    <vendor>JetBrains</vendor>
+  <id>ndrznch.docker.volumes.simple</id>
+  <name>Docker volumes integration</name>
+  <version>1.0</version>
+  <vendor email="ndr.znch@gmail.com">Andrii Zinchenko</vendor>
 
-    <!-- Product and plugin compatibility requirements -->
-    <!-- https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
-    <depends>com.intellij.modules.platform</depends>
+  <description><![CDATA[
+      Simplified version of Docker volumes integration plug-in.
+    ]]></description>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <applicationService serviceImplementation="org.jetbrains.plugins.template.services.MyApplicationService"/>
-        <projectService serviceImplementation="org.jetbrains.plugins.template.services.MyProjectService"/>
-    </extensions>
+  <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="173.0"/>
 
-    <projectListeners>
-        <listener class="org.jetbrains.plugins.template.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </projectListeners>
+  <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <depends>com.intellij.modules.platform</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <toolWindow id="Docker Volumes"
+                factoryClass="docker.volumes.toolWindow.DockerVolumesToolWindowFactory"
+                anchor="right"
+                icon="Icons.DOCKER_ICON" />
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
 </idea-plugin>
