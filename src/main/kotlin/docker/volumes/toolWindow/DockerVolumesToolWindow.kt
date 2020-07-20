@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.SimpleListCellRenderer
@@ -23,6 +24,7 @@ import docker.volumes.DockerVolumesBundle.messagePointer
 import docker.volumes.notifyAboutError
 import icons.Icons
 import javax.swing.DefaultListModel
+import javax.swing.Icon
 
 class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
     private val myListModel: DefaultListModel<DockerVolume> = DefaultListModel()
@@ -84,7 +86,12 @@ class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
         volumesList().forEach { myListModel.addElement(it) }
     }
 
-    private inner class CreateAction : AnAction({ messagePointer("create.action") }, IconUtil.getAddIcon()) {
+    /**
+     * ACTIONS
+     */
+    private abstract class DockerAction(text: String, icon: Icon) : AnAction({ text }, icon), DumbAware
+
+    private inner class CreateAction : DockerAction(messagePointer("create.action"), IconUtil.getAddIcon()) {
         override fun actionPerformed(event: AnActionEvent) {
             val wrapper = CreateVolumePopupWrapper()
 
@@ -101,7 +108,7 @@ class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
         }
     }
 
-    private inner class RemoveAction : AnAction({ messagePointer("remove.action") }, IconUtil.getRemoveIcon()) {
+    private inner class RemoveAction : DockerAction(messagePointer("remove.action"), IconUtil.getRemoveIcon()) {
         override fun actionPerformed(event: AnActionEvent) {
             myList.selectedValuesList.forEach {
                 when (val result = removeVolume(it.Name)) {
@@ -112,11 +119,11 @@ class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
         }
     }
 
-    private inner class RefreshAction : AnAction({ messagePointer("refresh.action") }, AllIcons.Actions.Refresh) {
+    private inner class RefreshAction : DockerAction(messagePointer("refresh.action"), AllIcons.Actions.Refresh) {
         override fun actionPerformed(event: AnActionEvent) = refreshList()
     }
 
-    private inner class PruneAction : AnAction({ messagePointer("prune.action") }, AllIcons.Actions.GC) {
+    private inner class PruneAction : DockerAction(messagePointer("prune.action"), AllIcons.Actions.GC) {
         override fun actionPerformed(event: AnActionEvent) {
             volumePrune()
             refreshList()
