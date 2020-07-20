@@ -1,13 +1,10 @@
 package docker.volumes.toolWindow
 
 import com.intellij.icons.AllIcons
-import com.intellij.notification.NotificationType
-import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.ui.ScrollPaneFactory
 import com.intellij.ui.SimpleListCellRenderer
@@ -15,15 +12,10 @@ import com.intellij.ui.components.JBList
 import com.intellij.util.IconUtil
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.components.BorderLayoutPanel
-import docker.communicator.Failure
-import docker.communicator.Success
-import docker.communicator.createVolume
-import docker.communicator.removeVolume
-import docker.communicator.volumePrune
-import docker.communicator.volumesList
+import docker.communicator.*
 import docker.data.DockerVolume
 import docker.volumes.DockerVolumesBundle.messagePointer
-import docker.volumes.NOTIFICATION_GROUP
+import docker.volumes.notifyAboutError
 import icons.Icons
 import javax.swing.DefaultListModel
 
@@ -85,13 +77,6 @@ class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
         myListModel.clear()
         // see comment in createList function
         volumesList().forEach { myListModel.addElement(it) }
-    }
-
-    private fun notifyAboutError(exception: Exception, project: Project?) {
-        val notification = NOTIFICATION_GROUP.createNotification(exception.message.orEmpty(), NotificationType.ERROR)
-
-        notification.setTitle("Docker error")
-        Notifications.Bus.notify(notification, project)
     }
 
     private inner class CreateAction : AnAction({ messagePointer("create.action") }, IconUtil.getAddIcon()) {

@@ -1,5 +1,6 @@
 package docker.communicator
 
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 import java.util.stream.Stream
 import kotlin.streams.toList
@@ -7,11 +8,16 @@ import kotlin.streams.toList
 private const val DOCKER_PROCESS_TIMEOUT: Long = 10
 
 fun dockerProcess(vararg args: String): Result<Stream<String>> {
-    val process = ProcessBuilder()
-        .command("docker", *args)
-        .redirectOutput(ProcessBuilder.Redirect.PIPE)
-        .redirectError(ProcessBuilder.Redirect.PIPE)
-        .start()
+    val pb = ProcessBuilder()
+            .command("docker", *args)
+            .redirectOutput(ProcessBuilder.Redirect.PIPE)
+            .redirectError(ProcessBuilder.Redirect.PIPE)
+
+    val process = try {
+        pb.start()
+    } catch (e: IOException) {
+        return Failure(e)
+    }
 
     process.waitFor(DOCKER_PROCESS_TIMEOUT, TimeUnit.SECONDS)
 

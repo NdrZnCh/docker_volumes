@@ -8,6 +8,7 @@ import com.intellij.ui.content.Content
 import docker.communicator.Failure
 import docker.communicator.Success
 import docker.communicator.docker
+import docker.volumes.notifyAboutError
 
 class DockerVolumesToolWindowFactory : ToolWindowFactory, DumbAware {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
@@ -18,8 +19,11 @@ class DockerVolumesToolWindowFactory : ToolWindowFactory, DumbAware {
         toolWindow.contentManager.addContent(content)
     }
 
-    override fun isApplicable(project: Project): Boolean = when (docker("-v")) {
+    override fun isApplicable(project: Project): Boolean = when (val result = docker("-v")) {
         is Success -> true
-        is Failure -> false
+        is Failure -> {
+            notifyAboutError(result.reason, project)
+            false
+        }
     }
 }
