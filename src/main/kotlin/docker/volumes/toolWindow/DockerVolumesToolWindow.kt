@@ -12,7 +12,12 @@ import com.intellij.ui.components.JBList
 import com.intellij.util.IconUtil
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.components.BorderLayoutPanel
-import docker.communicator.*
+import docker.communicator.Failure
+import docker.communicator.Success
+import docker.communicator.createVolume
+import docker.communicator.removeVolume
+import docker.communicator.volumePrune
+import docker.communicator.volumesList
 import docker.data.DockerVolume
 import docker.volumes.DockerVolumesBundle.messagePointer
 import docker.volumes.notifyAboutError
