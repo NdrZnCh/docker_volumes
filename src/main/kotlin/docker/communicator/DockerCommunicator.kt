@@ -16,7 +16,7 @@ fun dockerProcess(vararg args: String): Result<Stream<String>> {
     val process = try {
         pb.start()
     } catch (e: IOException) {
-        return Failure(e)
+        return Failure(e.message ?: "Error while run docker process")
     }
 
     process.waitFor(DOCKER_PROCESS_TIMEOUT, TimeUnit.SECONDS)
@@ -25,7 +25,7 @@ fun dockerProcess(vararg args: String): Result<Stream<String>> {
 
     return if (errorMessage.isEmpty() && process.exitValue() == 0) {
         Success(process.inputStream.bufferedReader().lines())
-    } else Failure(RuntimeException(errorMessage))
+    } else Failure(errorMessage)
 }
 
 fun <T> docker(vararg args: String, format: String = "json .", parser: (String) -> T): Result<List<T>> {

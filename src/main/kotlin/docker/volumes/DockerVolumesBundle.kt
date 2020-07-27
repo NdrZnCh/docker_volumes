@@ -28,8 +28,8 @@ object DockerVolumesBundle : AbstractBundle(BUNDLE) {
     }
 }
 
-fun notifyAboutError(exception: Exception, project: Project?) {
-    val notification = NOTIFICATION_GROUP.createNotification(exception.message.orEmpty(), NotificationType.ERROR)
+fun notifyAboutError(errorMessage: String, project: Project?) {
+    val notification = NOTIFICATION_GROUP.createNotification(errorMessage, NotificationType.ERROR)
 
     notification.setTitle("Docker error")
     Notifications.Bus.notify(notification, project)

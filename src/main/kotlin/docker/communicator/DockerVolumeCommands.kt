@@ -38,7 +38,7 @@ fun createVolume(name: String): Result<DockerVolume> {
 
             if (newVolume != null) {
                 Success(newVolume)
-            } else Failure(RuntimeException("Error while getting information about docker volume"))
+            } else Failure("Error while getting information about docker volume")
         }
         is Failure -> Failure(result.reason)
     }
