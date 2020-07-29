@@ -1,5 +1,6 @@
 package docker.volumes.toolWindow
 
+import com.google.gson.GsonBuilder
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnAction
@@ -34,17 +35,7 @@ class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
         myList.cellRenderer = SimpleListCellRenderer.create { jbLabel, t, _ ->
             jbLabel.toolTipText = """
                 <html>
-                    <b>Created at:</b> ${t.CreatedAt}
-                    <br>
-                    <b>Labels:</b> ${t.Labels}
-                    <br>
-                    <b>Mountpoint:</b> ${t.Mountpoint}
-                    <br>
-                    <b>Driver:</b> ${t.Driver}
-                    <br>
-                    <b>Scope:</b> ${t.Scope}
-                    <br>
-                    <b>Options:</b> ${t.Options}
+                   <pre>${GsonBuilder().setPrettyPrinting().create().toJson(t)}</pre>
                 </html>
             """
 

@@ -48,8 +48,8 @@ fun createVolume(arg: VolumeCreateArguments): Result<DockerVolume> {
     val options = arg.options.map { "--opt ${it.key}=${it.value}" }
 
     val command = StringBuilder("volume create --name ${arg.name} --driver ${arg.driver}").apply {
-        if (labels.isNotEmpty()) this.append(" " + labels.joinToString())
-        if (options.isNotEmpty()) this.append(" " + options.joinToString())
+        if (labels.isNotEmpty()) this.append(" " + labels.joinToString(separator = " "))
+        if (options.isNotEmpty()) this.append(" " + options.joinToString(separator = " "))
     }
 
     return when (val result = docker(*command.split(" ").toTypedArray())) {
