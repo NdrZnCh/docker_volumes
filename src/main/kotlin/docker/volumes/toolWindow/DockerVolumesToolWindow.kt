@@ -93,7 +93,7 @@ class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
 
     private inner class CreateAction : DockerAction(messagePointer("create.action"), IconUtil.getAddIcon()) {
         override fun actionPerformed(event: AnActionEvent) {
-            val wrapper = CreateVolumePopupWrapper()
+            val wrapper = CreateVolumeDialogWrapper()
 
             wrapper.applyAction = {
                 when (val result = createVolume(it)) {
@@ -104,7 +104,7 @@ class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
                 }
             }
 
-            wrapper.showPopup(event.project)
+            wrapper.show()
         }
     }
 
