@@ -11,20 +11,14 @@ import javax.swing.JComponent
 class DockerVolumeOptionsPanel : AddEditRemovePanel<Pair<String, String>>(
         MyOptionsTableModel(), mutableListOf(), "Options:"
 ) {
-    override fun removeItem(option: Pair<String, String>): Boolean {
-        return true
-    }
+    override fun removeItem(option: Pair<String, String>): Boolean = true
 
-    override fun editItem(option: Pair<String, String>): Pair<String, String>? {
-        return doAddOrEdit(option)
-    }
+    override fun editItem(option: Pair<String, String>): Pair<String, String>? = doAddOrEdit(option)
 
-    override fun addItem(): Pair<String, String>? {
-        return doAddOrEdit(null)
-    }
+    override fun addItem(): Pair<String, String>? = doAddOrEdit(null)
 
     private fun doAddOrEdit(option: Pair<String, String>?): Pair<String, String>? {
-        val optionDialog = MyOptionsDialog(option)
+        val optionDialog = MyAddOrEditOptionDialog(option)
         return if (!optionDialog.showAndGet()) null else optionDialog.getValue().takeIf {
             it.first.isNotBlank() && it.second.isNotBlank()
         }
@@ -38,7 +32,7 @@ class DockerVolumeOptionsPanel : AddEditRemovePanel<Pair<String, String>>(
         override fun getField(o: Pair<String, String>, c: Int): String = if (c == 0) o.first else o.second
     }
 
-    private class MyOptionsDialog(option: Pair<String, String>?) : DialogWrapper(false) {
+    private class MyAddOrEditOptionDialog(option: Pair<String, String>?) : DialogWrapper(false) {
         private var myOptionName: String = option?.first.orEmpty()
         private var myOptionValue: String = option?.second.orEmpty()
 
@@ -56,17 +50,15 @@ class DockerVolumeOptionsPanel : AddEditRemovePanel<Pair<String, String>>(
 
         init {
             init()
-            this.title = if (option == null) "Add new volume option" else "Edit volume options"
+            this.title = if (option == null) "Add new volume option" else "Edit volume option"
         }
 
-        override fun createCenterPanel(): JComponent? {
-            return panel {
-                row("Name:") {
-                    textField({ myOptionName }, { myOptionName = it }).withValidationOnApply(validator).focused()
-                }
-                row("Value:") {
-                    textField({ myOptionValue }, { myOptionValue = it }).withValidationOnApply(validator)
-                }
+        override fun createCenterPanel(): JComponent? = panel {
+            row("Name:") {
+                textField({ myOptionName }, { myOptionName = it }).withValidationOnApply(validator).focused()
+            }
+            row("Value:") {
+                textField({ myOptionValue }, { myOptionValue = it }).withValidationOnApply(validator)
             }
         }
 

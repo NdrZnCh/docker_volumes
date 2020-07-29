@@ -14,6 +14,7 @@ class CreateVolumeDialogWrapper : DialogWrapper(true) {
     private var myVolumeIsReadonly: Boolean = false
 
     private val optionsPanel = DockerVolumeOptionsPanel()
+    private val labelsPanel = DockerVolumeLabelsPanel()
 
     var applyAction: (String) -> Unit = {}
 
@@ -42,9 +43,10 @@ class CreateVolumeDialogWrapper : DialogWrapper(true) {
                 textField({ myVolumeDriver }, { myVolumeDriver = it })
             }
             row {
-                checkBox("Readonly:", { myVolumeIsReadonly }, { myVolumeIsReadonly = it })
+                checkBox("Readonly", { myVolumeIsReadonly }, { myVolumeIsReadonly = it })
             }
             row { optionsPanel(growX, growY, pushY) }
+            row { labelsPanel(growX, growY, pushY) }
         }
     }
 
