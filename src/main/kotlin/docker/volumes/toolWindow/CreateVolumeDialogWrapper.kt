@@ -13,8 +13,8 @@ class CreateVolumeDialogWrapper : DialogWrapper(true) {
     private var myVolumeName = ""
     private var myVolumeDriver = "local"
 
-    private val optionsPanel = DockerVolumePairPanel("Options:")
-    private val labelsPanel = DockerVolumePairPanel("Labels:")
+    private val optionsPanel = DockerVolumePairPanel("Options:", listOf())
+    private val labelsPanel = DockerVolumePairPanel("Labels:", listOf())
 
     var applyAction: (VolumeCreateArguments) -> Unit = {}
 
@@ -44,7 +44,7 @@ class CreateVolumeDialogWrapper : DialogWrapper(true) {
             }
             row { optionsPanel(growX, growY, pushY) }
             row { labelsPanel(growX, growY, pushY) }
-        }
+        }.withPreferredSize(500, 500)
     }
 
     override fun doOKAction() {

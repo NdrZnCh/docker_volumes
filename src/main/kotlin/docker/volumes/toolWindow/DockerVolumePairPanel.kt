@@ -3,12 +3,15 @@ package docker.volumes.toolWindow
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.AddEditRemovePanel
-import com.intellij.ui.components.JBTextField
 import com.intellij.ui.layout.ValidationInfoBuilder
 import com.intellij.ui.layout.panel
+import javax.swing.DefaultComboBoxModel
+import javax.swing.JComboBox
 import javax.swing.JComponent
+import javax.swing.JTextField
 
-class DockerVolumePairPanel(title: String) : AddEditRemovePanel<Pair<String, String>>(
+
+class DockerVolumePairPanel(title: String, private val possibleNames: List<String>) : AddEditRemovePanel<Pair<String, String>>(
         MyPairTableModel(), mutableListOf(), title
 ) {
     override fun removeItem(option: Pair<String, String>): Boolean = true
@@ -18,7 +21,7 @@ class DockerVolumePairPanel(title: String) : AddEditRemovePanel<Pair<String, Str
     override fun addItem(): Pair<String, String>? = doAddOrEdit(null)
 
     private fun doAddOrEdit(value: Pair<String, String>?): Pair<String, String>? {
-        val optionDialog = MyAddOrEditPairDialog(value)
+        val optionDialog = MyAddOrEditPairDialog(value, possibleNames)
         return if (!optionDialog.showAndGet()) null else optionDialog.getValue().takeIf {
             it.first.isNotBlank() && it.second.isNotBlank()
         }
@@ -32,13 +35,22 @@ class DockerVolumePairPanel(title: String) : AddEditRemovePanel<Pair<String, Str
         override fun getField(o: Pair<String, String>, c: Int): String = if (c == 0) o.first else o.second
     }
 
-    private class MyAddOrEditPairDialog(option: Pair<String, String>?) : DialogWrapper(false) {
-        private var myOptionName: String = option?.first.orEmpty()
-        private var myOptionValue: String = option?.second.orEmpty()
+    private class MyAddOrEditPairDialog(option: Pair<String, String>?, val possibleNames: List<String>) : DialogWrapper(false) {
+        private var myName: String = option?.first.orEmpty()
+        private var myValue: String = option?.second.orEmpty()
 
-        private fun validator(regex: String): ValidationInfoBuilder.(JBTextField) -> ValidationInfo? {
+        init {
+            init()
+            this.title = if (option == null) "Add new pair" else "Edit pair"
+        }
+
+        private fun <T : JComponent> validator(regex: String): ValidationInfoBuilder.(T) -> ValidationInfo? {
             return {
-                val value = it.text
+                val value = when (it) {
+                    is JTextField -> it.text
+                    is JComboBox<*> -> it.editor.item.toString()
+                    else -> throw UnsupportedOperationException("Unknown JComponent")
+                }
 
                 when {
                     value.isBlank() -> error("Can't be empty")
@@ -48,23 +60,22 @@ class DockerVolumePairPanel(title: String) : AddEditRemovePanel<Pair<String, Str
             }
         }
 
-        init {
-            init()
-            this.title = if (option == null) "Add new pair" else "Edit pair"
-        }
-
         override fun createCenterPanel(): JComponent? = panel {
+            val comboBox = JComboBox(DefaultComboBoxModel(possibleNames.toTypedArray())).apply {
+                isEditable = true
+                addItemListener { myName = it.item.toString() }
+            }
+
             row("Name:") {
-                textField({ myOptionName }, { myOptionName = it })
-                        .withValidationOnApply(validator("([a-zA-Z0-9])+"))
-                        .focused()
+                comboBox(growX, growY, pushY).withValidationOnApply(validator("([a-zA-Z0-9])+")).focused()
             }
             row("Value:") {
-                textField({ myOptionValue }, { myOptionValue = it })
-                        .withValidationOnApply(validator("([a-zA-Z0-9_.,{}=:/-])+"))
+                textField({ myValue }, {
+                    myValue = it
+                }).withValidationOnApply(validator("([a-zA-Z0-9_.,{}=:/-])+"))
             }
         }
 
-        fun getValue() = Pair(myOptionName, myOptionValue)
+        fun getValue() = Pair(myName, myValue)
     }
 }
