@@ -3,6 +3,7 @@ package docker.volumes.toolWindow
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.layout.LCFlags
 import com.intellij.ui.layout.panel
+import docker.communicator.VolumeCreateArguments
 import docker.volumes.DockerVolumesBundle
 import org.jetbrains.concurrency.runAsync
 import javax.swing.JComponent
@@ -11,12 +12,11 @@ import javax.swing.JComponent
 class CreateVolumeDialogWrapper : DialogWrapper(true) {
     private var myVolumeName = ""
     private var myVolumeDriver = "local"
-    private var myVolumeIsReadonly: Boolean = false
 
-    private val optionsPanel = DockerVolumeOptionsPanel()
-    private val labelsPanel = DockerVolumeLabelsPanel()
+    private val optionsPanel = DockerVolumePairPanel("Options:")
+    private val labelsPanel = DockerVolumePairPanel("Labels:")
 
-    var applyAction: (String) -> Unit = {}
+    var applyAction: (VolumeCreateArguments) -> Unit = {}
 
     init {
         this.init()
@@ -32,8 +32,8 @@ class CreateVolumeDialogWrapper : DialogWrapper(true) {
                     when {
                         value.isBlank() -> null
                         value.length < 2 -> error("Only empty or with length greater than 1 names are allowed.")
-                        !"([a-zA-Z0-9_.-])+".toRegex().matches(value) -> {
-                            error("Only '[a-zA-Z0-9_.-]' are allowed.")
+                        !"([a-zA-Z0-9])+".toRegex().matches(value) -> {
+                            error("Only '[a-zA-Z0-9]' are allowed.")
                         }
                         else -> null
                     }
@@ -41,9 +41,6 @@ class CreateVolumeDialogWrapper : DialogWrapper(true) {
             }
             row("Driver:") {
                 textField({ myVolumeDriver }, { myVolumeDriver = it })
-            }
-            row {
-                checkBox("Readonly", { myVolumeIsReadonly }, { myVolumeIsReadonly = it })
             }
             row { optionsPanel(growX, growY, pushY) }
             row { labelsPanel(growX, growY, pushY) }
@@ -53,6 +50,13 @@ class CreateVolumeDialogWrapper : DialogWrapper(true) {
     override fun doOKAction() {
         super.doOKAction()
 
-        runAsync { applyAction(myVolumeName) }
+        val arguments = VolumeCreateArguments {
+            name = myVolumeName
+            driver = myVolumeDriver
+            options = optionsPanel.data.toMap()
+            labels = labelsPanel.data.toMap()
+        }
+
+        runAsync { applyAction(arguments) }
     }
 }
