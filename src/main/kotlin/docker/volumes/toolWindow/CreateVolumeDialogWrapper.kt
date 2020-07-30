@@ -8,13 +8,16 @@ import docker.volumes.DockerVolumesBundle
 import org.jetbrains.concurrency.runAsync
 import javax.swing.JComponent
 
-
 class CreateVolumeDialogWrapper : DialogWrapper(true) {
     private var myVolumeName = ""
     private var myVolumeDriver = "local"
 
-    private val optionsPanel = DockerVolumePairPanel("Options:", listOf())
-    private val labelsPanel = DockerVolumePairPanel("Labels:", listOf())
+    private val optionsPanel = DockerVolumePairPanel("Options:", possibleValues = mapOf(
+            "type" to arrayOf("tmpfs", "btrfs", "nfs"),
+            "device" to arrayOf(),
+            "o" to arrayOf()
+    ))
+    private val labelsPanel = DockerVolumePairPanel("Labels:")
 
     var applyAction: (VolumeCreateArguments) -> Unit = {}
 

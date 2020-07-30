@@ -48,12 +48,7 @@ class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
     }
 
     private fun createList(model: DefaultListModel<DockerVolume>): JBList<DockerVolume> {
-        /*
-            For some unknown for me reason I can't use model.addAll in this place,
-            because of failed build in github with "type mismatch" error, but in my
-            machine (MacOS) everything looks OK.
-         */
-        volumesList().forEach { model.addElement(it) }
+        model.setNewList(volumesList())
         return JBList(model)
     }
 
@@ -69,12 +64,6 @@ class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
 
         val actionToolBar = ActionManager.getInstance().createActionToolbar("DockerVolumesToolbar", group, true)
         return JBUI.Panels.simplePanel(actionToolBar.component)
-    }
-
-    private fun refreshList() {
-        myListModel.clear()
-        // see comment in createList function
-        volumesList().forEach { myListModel.addElement(it) }
     }
 
     /**
@@ -111,13 +100,18 @@ class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
     }
 
     private inner class RefreshAction : DockerAction(messagePointer("refresh.action"), AllIcons.Actions.Refresh) {
-        override fun actionPerformed(event: AnActionEvent) = refreshList()
+        override fun actionPerformed(event: AnActionEvent) = myListModel.setNewList(volumesList())
     }
 
     private inner class PruneAction : DockerAction(messagePointer("prune.action"), AllIcons.Actions.GC) {
         override fun actionPerformed(event: AnActionEvent) {
             volumePrune()
-            refreshList()
+            myListModel.setNewList(volumesList())
         }
     }
+}
+
+private fun <T> DefaultListModel<T>.setNewList(other: List<T>) {
+    this.clear()
+    other.forEach { this.addElement(it) }
 }
