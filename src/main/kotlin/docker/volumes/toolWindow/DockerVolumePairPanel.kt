@@ -1,5 +1,6 @@
 package docker.volumes.toolWindow
 
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.AddEditRemovePanel
@@ -48,6 +49,39 @@ class DockerVolumePairPanel(
             this.title = if (option == null) "Add new pair" else "Edit pair"
         }
 
+        override fun createCenterPanel(): JComponent? {
+            val valueComponent = ComboBox(DefaultComboBoxModel(possibleValues.values.firstOr { emptyArray() })).apply {
+                isEditable = true
+                if (myValue.isNotBlank()) editor.item = myValue
+                addItemListener { myValue = it.item.toString() }
+            }
+
+            val nameComponent = ComboBox(DefaultComboBoxModel(possibleValues.keys.toTypedArray())).apply {
+                isEditable = true
+                if (myName.isNotBlank()) editor.item = myName
+                addItemListener {
+                    myName = it.item.toString()
+                    if (it.stateChange == 1) valueComponent.setNewArray(possibleValues[myName])
+                }
+            }
+
+            return panel {
+                row("Name:") {
+                    nameComponent(growX, growY, pushY).apply {
+                        withValidationOnApply(validator("([a-zA-Z0-9])+"))
+                        withErrorOnApplyIf("Key already defined. All keys must be unique.") {
+                            alreadyDefinedKeys.contains(it.editor.item)
+                        }
+                    }.focused()
+                }
+                row("Value:") {
+                    valueComponent(growX, growY, pushY).withValidationOnApply(validator("([a-zA-Z0-9_.,{}=:/-])+"))
+                }
+            }
+        }
+
+        fun getValue() = Pair(myName, myValue)
+
         private fun <T : JComponent> validator(regex: String): ValidationInfoBuilder.(T) -> ValidationInfo? {
             return {
                 val value = when (it) {
@@ -63,36 +97,6 @@ class DockerVolumePairPanel(
                 }
             }
         }
-
-        override fun createCenterPanel(): JComponent? = panel {
-            val valueComponent = JComboBox(DefaultComboBoxModel(possibleValues.values.firstOr { emptyArray() })).apply {
-                isEditable = true
-                if (myValue.isNotBlank()) editor.item = myValue
-                addItemListener { myValue = it.item.toString() }
-            }
-
-            val nameComponent = JComboBox(DefaultComboBoxModel(possibleValues.keys.toTypedArray())).apply {
-                isEditable = true
-                if (myName.isNotBlank()) editor.item = myName
-                addItemListener {
-                    myName = it.item.toString()
-                    valueComponent.setNewArray(possibleValues[myName])
-                }
-            }
-
-            row("Name:") {
-                nameComponent(growX, growY, pushY)
-                        .withValidationOnApply(validator("([a-zA-Z0-9])+"))
-                        .withErrorOnApplyIf("Key already defined. All keys must be unique.") {
-                            alreadyDefinedKeys.contains(it.editor.item)
-                        }.focused()
-            }
-            row("Value:") {
-                valueComponent(growX, growY, pushY).withValidationOnApply(validator("([a-zA-Z0-9_.,{}=:/-])+"))
-            }
-        }
-
-        fun getValue() = Pair(myName, myValue)
     }
 
     private class MyPairTableModel : AddEditRemovePanel.TableModel<Pair<String, String>>() {
