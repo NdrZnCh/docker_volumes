@@ -1,4 +1,4 @@
-package docker.volumes.toolWindow
+package docker.volumes.ui.toolWindow
 
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.layout.LCFlags

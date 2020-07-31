@@ -17,7 +17,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <toolWindow id="Docker Volumes"
-                factoryClass="docker.volumes.toolWindow.DockerVolumesToolWindowFactory"
+                factoryClass="docker.volumes.ui.toolWindow.DockerVolumesToolWindowFactory"
                 anchor="right"
                 icon="Icons.DOCKER_ICON" />
   </extensions>

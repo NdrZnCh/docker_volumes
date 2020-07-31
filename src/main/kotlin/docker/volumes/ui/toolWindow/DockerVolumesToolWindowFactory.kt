@@ -1,4 +1,4 @@
-package docker.volumes.toolWindow
+package docker.volumes.ui.toolWindow
 
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
