@@ -4,11 +4,13 @@ import com.intellij.ui.components.JBList
 import docker.data.DockerVolume
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import javax.swing.Icon
-import javax.swing.JMenuItem
-import javax.swing.JPopupMenu
-import javax.swing.SwingUtilities
+import javax.swing.*
 import kotlin.properties.Delegates
+
+fun <T> DefaultListModel<T>.setNewList(other: List<T>) {
+    this.clear()
+    other.forEach { this.addElement(it) }
+}
 
 fun JBList<DockerVolume>.addRightClickPopupActions(vararg actions: ActionDefinition) {
     val list = this
