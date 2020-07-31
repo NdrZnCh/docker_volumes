@@ -24,6 +24,7 @@ import docker.data.DockerVolume
 import docker.volumes.DockerVolumesBundle.messagePointer
 import docker.volumes.notifyAboutError
 import icons.Icons
+import org.jetbrains.concurrency.runAsync
 import javax.swing.DefaultListModel
 import javax.swing.Icon
 
@@ -76,11 +77,13 @@ class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
             val wrapper = CreateVolumeDialogWrapper()
 
             wrapper.applyAction = {
-                when (val result = createVolume(it)) {
-                    is Success -> if (!myListModel.contains(result.value)) {
-                        myListModel.addElement(result.value)
+                runAsync {
+                    when (val result = createVolume(it)) {
+                        is Success -> if (!myListModel.contains(result.value)) {
+                            myListModel.addElement(result.value)
+                        }
+                        is Failure -> notifyAboutError(result.reason, event.project)
                     }
-                    is Failure -> notifyAboutError(result.reason, event.project)
                 }
             }
 
@@ -90,23 +93,29 @@ class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
 
     private inner class RemoveAction : DockerAction(messagePointer("remove.action"), IconUtil.getRemoveIcon()) {
         override fun actionPerformed(event: AnActionEvent) {
-            myList.selectedValuesList.forEach {
-                when (val result = removeVolume(it.Name)) {
-                    is Success -> myListModel.removeElement(it)
-                    is Failure -> notifyAboutError(result.reason, event.project)
+            runAsync {
+                myList.selectedValuesList.forEach {
+                    when (val result = removeVolume(it.Name)) {
+                        is Success -> myListModel.removeElement(it)
+                        is Failure -> notifyAboutError(result.reason, event.project)
+                    }
                 }
             }
         }
     }
 
     private inner class RefreshAction : DockerAction(messagePointer("refresh.action"), AllIcons.Actions.Refresh) {
-        override fun actionPerformed(event: AnActionEvent) = myListModel.setNewList(volumesList())
+        override fun actionPerformed(event: AnActionEvent) {
+            runAsync { myListModel.setNewList(volumesList()) }
+        }
     }
 
     private inner class PruneAction : DockerAction(messagePointer("prune.action"), AllIcons.Actions.GC) {
         override fun actionPerformed(event: AnActionEvent) {
-            volumePrune()
-            myListModel.setNewList(volumesList())
+            runAsync {
+                volumePrune()
+                myListModel.setNewList(volumesList())
+            }
         }
     }
 }

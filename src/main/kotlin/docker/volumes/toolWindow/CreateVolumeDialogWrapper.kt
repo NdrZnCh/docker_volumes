@@ -5,7 +5,6 @@ import com.intellij.ui.layout.LCFlags
 import com.intellij.ui.layout.panel
 import docker.communicator.VolumeCreateArguments
 import docker.volumes.DockerVolumesBundle
-import org.jetbrains.concurrency.runAsync
 import javax.swing.JComponent
 
 class CreateVolumeDialogWrapper : DialogWrapper(true) {
@@ -53,13 +52,11 @@ class CreateVolumeDialogWrapper : DialogWrapper(true) {
     override fun doOKAction() {
         super.doOKAction()
 
-        val arguments = VolumeCreateArguments {
+        applyAction(VolumeCreateArguments {
             name = myVolumeName
             driver = myVolumeDriver
             options = optionsPanel.data.toMap()
             labels = labelsPanel.data.toMap()
-        }
-
-        runAsync { applyAction(arguments) }
+        })
     }
 }
