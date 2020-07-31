@@ -19,6 +19,10 @@ class DockerVolumePairPanel(
         val possibleValues: Map<String, Array<String>> = mapOf()
 ) : AddEditRemovePanel<Pair<String, String>>(MyPairTableModel(), mutableListOf(), title) {
 
+    init {
+        this.table.setShowColumns(true)
+    }
+
     override fun removeItem(pair: Pair<String, String>): Boolean = true
 
     override fun editItem(pair: Pair<String, String>): Pair<String, String>? = doAddOrEdit(pair)
@@ -100,9 +104,9 @@ class DockerVolumePairPanel(
     }
 
     private class MyPairTableModel : AddEditRemovePanel.TableModel<Pair<String, String>>() {
+
         override fun getColumnCount(): Int = 2
 
-        // FIXME: why it's does't working??
         override fun getColumnName(column: Int): String = if (column == 0) "Name" else "Value"
 
         override fun getField(pair: Pair<String, String>, c: Int): String = if (c == 0) pair.first else pair.second
