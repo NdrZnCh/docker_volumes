@@ -8,6 +8,7 @@ import docker.volumes.DockerVolumesBundle
 import javax.swing.JComponent
 
 class CreateVolumeDialogWrapper : DialogWrapper(true) {
+
     private var myVolumeName = ""
     private var myVolumeDriver = "local"
 

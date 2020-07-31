@@ -13,14 +13,17 @@ import docker.volumes.ui.toolWindow.actions.volumeInspectPopupAction
 import docker.volumes.ui.utils.addRightClickPopupActions
 import docker.volumes.ui.utils.setNewList
 import icons.Icons
+import java.awt.Font
 import javax.swing.DefaultListModel
 
 class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
+
     private val myList: JBList<DockerVolume> = createList()
 
     init {
         myList.cellRenderer = SimpleListCellRenderer.create { jbLabel, t, _ ->
-            jbLabel.icon = Icons.DOCKER_ICON
+            jbLabel.font = jbLabel.font.deriveFont(jbLabel.font.style or Font.BOLD)
+            jbLabel.icon = Icons.DOCKER_VOLUME
             jbLabel.text = t.Name
         }
 

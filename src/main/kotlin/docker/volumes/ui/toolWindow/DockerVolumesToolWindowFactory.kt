@@ -11,6 +11,7 @@ import docker.communicator.docker
 import docker.volumes.notifyAboutError
 
 class DockerVolumesToolWindowFactory : ToolWindowFactory, DumbAware {
+    
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val dockerVolumes = DockerVolumesToolWindow()
         val contentManager = toolWindow.contentManager
