@@ -32,7 +32,7 @@ class DockerVolumesToolBarActionGroup(val list: JBList<DockerVolume>) : DefaultA
 
     private inner class CreateAction : DockerAction(messagePointer("create.action"), IconUtil.getAddIcon()) {
         override fun actionPerformed(event: AnActionEvent) {
-            val wrapper = CreateVolumeDialogWrapper()
+            val wrapper = CreateVolumeDialogWrapper(listModel.elements().toList().map { it.Name })
 
             wrapper.applyAction = {
                 runAsync {

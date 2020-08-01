@@ -7,7 +7,7 @@ import docker.communicator.VolumeCreateArguments
 import docker.volumes.DockerVolumesBundle
 import javax.swing.JComponent
 
-class CreateVolumeDialogWrapper : DialogWrapper(true) {
+class CreateVolumeDialogWrapper(private val alreadyDefinedNames: List<String>) : DialogWrapper(true) {
 
     companion object {
         private const val PANEL_WIDTH: Int = 500
@@ -44,6 +44,7 @@ class CreateVolumeDialogWrapper : DialogWrapper(true) {
                         !"([a-zA-Z0-9])+".toRegex().matches(value) -> {
                             error("Only '[a-zA-Z0-9]' are allowed.")
                         }
+                        alreadyDefinedNames.contains(value) -> error("Volume with name '$value' already defined!")
                         else -> null
                     }
                 }.focused()
