@@ -6,13 +6,13 @@ import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.AddEditRemovePanel
 import com.intellij.ui.layout.ValidationInfoBuilder
 import com.intellij.ui.layout.panel
-import utils.filterIf
-import utils.firstOr
-import utils.minusIfNotNull
 import javax.swing.DefaultComboBoxModel
 import javax.swing.JComboBox
 import javax.swing.JComponent
 import javax.swing.JTextField
+import utils.filterIf
+import utils.firstOr
+import utils.minusIfNotNull
 
 class DockerVolumePairPanel(
     title: String,

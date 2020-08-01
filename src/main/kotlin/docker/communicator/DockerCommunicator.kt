@@ -1,9 +1,8 @@
 package docker.communicator
 
-import java.io.IOException
-import java.util.concurrent.TimeUnit
 import java.util.stream.Stream
 import kotlin.streams.toList
+import utils.runBackgroundProcess
 
 private const val DOCKER_PROCESS_TIMEOUT: Long = 10
 
@@ -13,19 +12,16 @@ fun dockerProcess(vararg args: String): Result<Stream<String>> {
             .redirectOutput(ProcessBuilder.Redirect.PIPE)
             .redirectError(ProcessBuilder.Redirect.PIPE)
 
-    val process = try {
-        pb.start()
-    } catch (e: IOException) {
-        return Failure(e.message ?: "Error while run docker process")
+    return when (val result = runBackgroundProcess(pb, DOCKER_PROCESS_TIMEOUT)) {
+        is Success -> {
+            val errorMessage = result.value.errorStream.bufferedReader().readText()
+
+            return if (errorMessage.isEmpty() && result.value.exitValue() == 0) {
+                Success(result.value.inputStream.bufferedReader().lines())
+            } else Failure(errorMessage)
+        }
+        is Failure -> Failure(result.reason)
     }
-
-    process.waitFor(DOCKER_PROCESS_TIMEOUT, TimeUnit.SECONDS)
-
-    val errorMessage = process.errorStream.bufferedReader().readText()
-
-    return if (errorMessage.isEmpty() && process.exitValue() == 0) {
-        Success(process.inputStream.bufferedReader().lines())
-    } else Failure(errorMessage)
 }
 
 fun <T> docker(vararg args: String, format: String = "json .", parser: (String) -> T): Result<List<T>> {
