@@ -9,6 +9,11 @@ import javax.swing.JComponent
 
 class CreateVolumeDialogWrapper : DialogWrapper(true) {
 
+    companion object {
+        private const val PANEL_WIDTH: Int = 500
+        private const val PANEL_HEIGHT: Int = 500
+    }
+
     private var myVolumeName = ""
     private var myVolumeDriver = "local"
 
@@ -16,7 +21,8 @@ class CreateVolumeDialogWrapper : DialogWrapper(true) {
             "type" to arrayOf("tmpfs", "btrfs", "nfs"),
             "device" to arrayOf(),
             "o" to arrayOf()
-    ))
+        )
+    )
     private val labelsPanel = DockerVolumePairPanel("Labels:")
 
     var applyAction: (VolumeCreateArguments) -> Unit = {}
@@ -47,7 +53,7 @@ class CreateVolumeDialogWrapper : DialogWrapper(true) {
             }
             row { optionsPanel(growX, growY, pushY) }
             row { labelsPanel(growX, growY, pushY) }
-        }.withPreferredSize(500, 500)
+        }.withPreferredSize(PANEL_WIDTH, PANEL_HEIGHT)
     }
 
     override fun doOKAction() {

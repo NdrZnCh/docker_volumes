@@ -15,8 +15,8 @@ import javax.swing.JComponent
 import javax.swing.JTextField
 
 class DockerVolumePairPanel(
-        title: String,
-        val possibleValues: Map<String, Array<String>> = mapOf()
+    title: String,
+    val possibleValues: Map<String, Array<String>> = mapOf()
 ) : AddEditRemovePanel<Pair<String, String>>(MyPairTableModel(), mutableListOf(), title) {
 
     init {
@@ -41,9 +41,9 @@ class DockerVolumePairPanel(
     }
 
     private class MyAddOrEditPairDialog(
-            option: Pair<String, String>?,
-            val alreadyDefinedKeys: Set<String>,
-            val possibleValues: Map<String, Array<String>>
+        option: Pair<String, String>?,
+        val alreadyDefinedKeys: Set<String>,
+        val possibleValues: Map<String, Array<String>>
     ) : DialogWrapper(false) {
         private var myName: String = option?.first ?: possibleValues.keys.firstOr { "" }
         private var myValue: String = option?.second ?: possibleValues[myName].firstOr { "" }
