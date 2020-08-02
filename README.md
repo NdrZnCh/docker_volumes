@@ -1,7 +1,20 @@
 # Docker volumes integration
 
 <!-- Plugin description -->
-A simplified version of docker volumes plug-in.
+A plug-in for working with [Docker volumes](https://docs.docker.com/storage/volumes/).
+
+Features:
+* Tool window (`Docker volumes`)
+    * Actions
+        * Create volume
+            * Dialog for configure and create a new volume
+        * Remove one or more volumes
+        * Refresh list
+        * Remove all unused volumes (`docker volume prune`)
+    * Right click actions
+        * Inspect volume 
+        * Dialog for generate mount command
+    * Notification about docker errors
 <!-- Plugin description end -->
 
 ## Installation

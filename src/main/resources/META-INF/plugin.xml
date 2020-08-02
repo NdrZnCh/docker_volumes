@@ -1,11 +1,35 @@
 <idea-plugin>
-  <id>ndrznch.docker.volumes.simple</id>
+  <id>ndrznch.docker.volumes</id>
   <name>Docker volumes integration</name>
-  <version>1.0</version>
+  <version>0.0.2</version>
   <vendor email="ndr.znch@gmail.com">Andrii Zinchenko</vendor>
 
   <description><![CDATA[
-      Simplified version of Docker volumes integration plug-in.
+      <p>A plug-in for working with <a href="https://docs.docker.com/storage/volumes/">Docker volumes</a>.</p>
+
+      <p>Features:</p>
+
+      <ul>
+          <li>Tool window (<code>Docker volumes</code>)<ul>
+                  <li>Actions<ul>
+                          <li>Create volume<ul>
+                                  <li>Dialog for configure and create a new volume</li>
+                              </ul>
+                          </li>
+                          <li>Remove one or more volumes</li>
+                          <li>Refresh list</li>
+                          <li>Remove all unused volumes (<code>docker volume prune</code>)</li>
+                      </ul>
+                  </li>
+                  <li>Right click actions<ul>
+                          <li>Inspect volume </li>
+                          <li>Dialog for generate mount command</li>
+                      </ul>
+                  </li>
+                  <li>Notification about docker errors</li>
+              </ul>
+          </li>
+      </ul>
     ]]></description>
 
   <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->

@@ -14,3 +14,11 @@
 - Show information about volume (On hover action)
 - Button for remove all unused local volumes 
 - Notification about errors from Docker
+
+## [0.0.2]
+### Added
+- On hover inspect -> Right click action
+- New volume popup -> Extended dialog for configure new volume
+- Restyling
+- Right click -> `Generate Mount Option...`
+- Run docker process as IDEA background process
