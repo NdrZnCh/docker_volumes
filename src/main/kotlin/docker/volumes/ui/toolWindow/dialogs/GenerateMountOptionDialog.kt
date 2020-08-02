@@ -38,7 +38,11 @@ class GenerateMountOptionDialog(private val selectedValue: DockerVolume) : Dialo
 
     override fun createCenterPanel(): JComponent? = panel {
         row(messagePointer("docker.dialogs.generateMountOption.destination.title")) {
-            textField(mountDestination)
+            textField(mountDestination).withValidationOnInput {
+                if (!"^/|(/[\\w-]+)+\$".toRegex().matches(it.text)) {
+                    error(messagePointer("docker.dialogs.generateMountOption.destination.error", it.text))
+                } else null
+            }
         }
         row {
             val title = messagePointer("docker.dialogs.generateMountOption.readonly.title")
