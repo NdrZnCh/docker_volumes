@@ -8,7 +8,7 @@ import docker.volumes.ui.utils.ActionDefinition
 import javax.swing.JPopupMenu
 import javax.swing.JTextPane
 
-val volumeInspectPopupAction = ActionDefinition {
+val volumeInspect = ActionDefinition {
     title = messagePointer("docker.toolWindow.actions.inspect.title")
     icon = AllIcons.Actions.Show
     action = { list, e, _ ->
@@ -26,7 +26,7 @@ val volumeInspectPopupAction = ActionDefinition {
     }
 }
 
-val volumeGenerateMountOption = ActionDefinition {
+val generateMountOption = ActionDefinition {
     title = messagePointer("docker.toolWindow.actions.generateMountOption.title")
     icon = AllIcons.Actions.Compile
     action = { list, _, _ ->

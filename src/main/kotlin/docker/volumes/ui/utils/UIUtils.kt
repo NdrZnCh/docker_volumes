@@ -18,7 +18,7 @@ fun JCheckBox.bind(property: GraphProperty<Boolean>) {
     addItemListener { property.set(it.stateChange == ItemEvent.SELECTED) }
 }
 
-fun JBList<DockerVolume>.addRightClickPopupActions(vararg actions: ActionDefinition) {
+fun JBList<DockerVolume>.addRightClickActions(vararg actions: ActionDefinition) {
     val list = this
 
     this.addMouseListener(object : MouseAdapter() {
