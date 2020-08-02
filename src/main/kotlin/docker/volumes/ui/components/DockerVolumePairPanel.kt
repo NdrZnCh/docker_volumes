@@ -1,4 +1,4 @@
-package docker.volumes.ui.toolWindow
+package docker.volumes.ui.components
 
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogWrapper

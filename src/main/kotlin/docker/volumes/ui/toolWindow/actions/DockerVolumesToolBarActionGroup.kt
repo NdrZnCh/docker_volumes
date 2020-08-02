@@ -11,7 +11,7 @@ import docker.communicator.*
 import docker.data.DockerVolume
 import docker.volumes.DockerVolumesBundle.messagePointer
 import docker.volumes.notifyAboutError
-import docker.volumes.ui.toolWindow.CreateVolumeDialogWrapper
+import docker.volumes.ui.toolWindow.dialogs.CreateVolumeDialog
 import docker.volumes.ui.utils.setNewList
 import javax.swing.DefaultListModel
 import javax.swing.Icon
@@ -32,9 +32,9 @@ class DockerVolumesToolBarActionGroup(val list: JBList<DockerVolume>) : DefaultA
 
     private inner class CreateAction : DockerAction(messagePointer("create.action"), IconUtil.getAddIcon()) {
         override fun actionPerformed(event: AnActionEvent) {
-            val wrapper = CreateVolumeDialogWrapper(listModel.elements().toList().map { it.Name })
+            val dialog = CreateVolumeDialog(listModel.elements().toList().map { it.Name })
 
-            wrapper.applyAction = {
+            dialog.applyAction = {
                 runAsync {
                     when (val result = createVolume(it)) {
                         is Success -> if (!listModel.contains(result.value)) {
@@ -45,7 +45,7 @@ class DockerVolumesToolBarActionGroup(val list: JBList<DockerVolume>) : DefaultA
                 }
             }
 
-            wrapper.show()
+            dialog.show()
         }
     }
 
