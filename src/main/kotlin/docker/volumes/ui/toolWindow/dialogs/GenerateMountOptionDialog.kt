@@ -21,8 +21,6 @@ class GenerateMountOptionDialog(private val selectedValue: DockerVolume) : Dialo
     private val mountOption = propertyGraph.graphProperty { buildMountOption() }
 
     companion object {
-        private const val COMMENT_LENGTH = 100
-
         private const val PANEL_WIDTH: Int = 500
         private const val PANEL_HEIGHT: Int = 100
     }
