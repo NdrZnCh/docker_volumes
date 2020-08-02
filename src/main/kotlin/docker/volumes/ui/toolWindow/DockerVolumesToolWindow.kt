@@ -9,6 +9,7 @@ import com.intellij.util.ui.JBUI
 import docker.communicator.volumesList
 import docker.data.DockerVolume
 import docker.volumes.ui.toolWindow.actions.DockerVolumesToolBarActionGroup
+import docker.volumes.ui.toolWindow.actions.volumeGenerateMountCommand
 import docker.volumes.ui.toolWindow.actions.volumeInspectPopupAction
 import docker.volumes.ui.utils.addRightClickPopupActions
 import docker.volumes.ui.utils.setNewList
@@ -27,7 +28,7 @@ class DockerVolumesToolWindow : SimpleToolWindowPanel(true, true) {
             jbLabel.text = t.Name
         }
 
-        myList.addRightClickPopupActions(volumeInspectPopupAction)
+        myList.addRightClickPopupActions(volumeInspectPopupAction, volumeGenerateMountCommand)
 
         toolbar = JBUI.Panels.simplePanel(ActionManager.getInstance().run {
             createActionToolbar("DockerVolumesToolbar", DockerVolumesToolBarActionGroup(myList), true)
