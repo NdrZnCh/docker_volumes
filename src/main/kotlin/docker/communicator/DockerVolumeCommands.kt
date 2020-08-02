@@ -18,7 +18,9 @@ private fun jsonToDockerVolume(json: String): DockerVolume? {
 private fun String.removeQuotes() = this.removeSurrounding("\"")
 
 fun volumesList(): List<DockerVolume> {
-    return when (val result = dockerWithFormatter("volume", "ls", format = "json .Name") { volumeInspect(it.removeQuotes()) }) {
+    return when (val result = dockerWithFormatter("volume", "ls", format = "json .Name") {
+        volumeInspect(it.removeQuotes())
+    }) {
         is Success -> result.value.filterNotNull()
         is Failure -> emptyList()
     }
