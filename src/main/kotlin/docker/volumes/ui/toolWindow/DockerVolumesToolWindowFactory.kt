@@ -20,7 +20,7 @@ class DockerVolumesToolWindowFactory : ToolWindowFactory, DumbAware {
         toolWindow.contentManager.addContent(content)
     }
 
-    override fun isApplicable(project: Project): Boolean = when (val result = docker("-v")) {
+    override fun isApplicable(project: Project): Boolean = when (val result = docker("-v") { Unit }) {
         is Success -> true
         is Failure -> {
             notifyAboutError(result.reason, project)

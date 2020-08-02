@@ -24,16 +24,16 @@ fun dockerProcess(vararg args: String): Result<Stream<String>> {
     }
 }
 
-fun <T> docker(vararg args: String, format: String = "json .", parser: (String) -> T): Result<List<T>> {
+fun <T> dockerWithFormatter(vararg args: String, format: String = "json .", parser: (String) -> T): Result<List<T>> {
     return when (val processResult = dockerProcess(*args, "--format={{$format}}")) {
-        is Success -> Success(processResult.value.map { parser.invoke(it) }.toList())
+        is Success -> Success(processResult.value.map { parser(it) }.toList())
         is Failure -> Failure(processResult.reason)
     }
 }
 
-fun docker(vararg args: String): Result<Unit> {
+inline fun <R> docker(vararg args: String, onSuccess: (Stream<String>) -> R): Result<R> {
     return when (val processResult = dockerProcess(*args)) {
-        is Success -> Success(Unit)
+        is Success -> Success(onSuccess(processResult.value))
         is Failure -> Failure(processResult.reason)
     }
 }

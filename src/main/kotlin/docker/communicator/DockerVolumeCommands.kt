@@ -3,6 +3,7 @@ package docker.communicator
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import docker.data.DockerVolume
+import java.util.stream.Collectors
 import kotlin.properties.Delegates
 
 private fun jsonToDockerVolume(json: String): DockerVolume? {
@@ -17,20 +18,20 @@ private fun jsonToDockerVolume(json: String): DockerVolume? {
 private fun String.removeQuotes() = this.removeSurrounding("\"")
 
 fun volumesList(): List<DockerVolume> {
-    return when (val result = docker("volume", "ls", format = "json .Name") { volumeInspect(it.removeQuotes()) }) {
+    return when (val result = dockerWithFormatter("volume", "ls", format = "json .Name") { volumeInspect(it.removeQuotes()) }) {
         is Success -> result.value.filterNotNull()
         is Failure -> emptyList()
     }
 }
 
 fun volumeInspect(name: String): DockerVolume? {
-    return when (val result = docker("volume", "inspect", name) { jsonToDockerVolume(it) }) {
+    return when (val result = dockerWithFormatter("volume", "inspect", name) { jsonToDockerVolume(it) }) {
         is Success -> result.value.firstOrNull()
         is Failure -> null
     }
 }
 
-fun volumePrune(): Result<Unit> = docker("volume", "prune", "--force")
+fun volumePrune(): Result<Unit> = docker("volume", "prune", "--force") { Unit }
 
 class VolumeCreateArguments() {
     constructor(init: VolumeCreateArguments.() -> Unit) : this() {
@@ -50,11 +51,11 @@ fun createVolume(arg: VolumeCreateArguments): Result<DockerVolume> {
     val command = StringBuilder("volume create --name ${arg.name} --driver ${arg.driver}").apply {
         if (labels.isNotEmpty()) this.append(" " + labels.joinToString(separator = " "))
         if (options.isNotEmpty()) this.append(" " + options.joinToString(separator = " "))
-    }
+    }.split(" ").toTypedArray()
 
-    return when (val result = docker(*command.split(" ").toTypedArray())) {
+    return when (val result = docker(*command) { it.collect(Collectors.joining()) }) {
         is Success -> {
-            val newVolume = volumeInspect(arg.name)
+            val newVolume = volumeInspect(result.value)
 
             if (newVolume != null) {
                 Success(newVolume)
@@ -64,4 +65,4 @@ fun createVolume(arg: VolumeCreateArguments): Result<DockerVolume> {
     }
 }
 
-fun removeVolume(element: String): Result<Unit> = docker("volume", "rm", element, "--force")
+fun removeVolume(element: String): Result<Unit> = docker("volume", "rm", element, "--force") { Unit }
