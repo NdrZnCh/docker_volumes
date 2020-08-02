@@ -6,6 +6,7 @@ import com.intellij.notification.NotificationGroup
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
 import com.intellij.openapi.project.Project
+import docker.volumes.DockerVolumesBundle.messagePointer
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.annotations.PropertyKey
 
@@ -31,6 +32,6 @@ object DockerVolumesBundle : AbstractBundle(BUNDLE) {
 fun notifyAboutError(errorMessage: String, project: Project?) {
     val notification = NOTIFICATION_GROUP.createNotification(errorMessage, NotificationType.ERROR)
 
-    notification.setTitle("Docker error")
+    notification.setTitle(messagePointer("error.notification.title"))
     Notifications.Bus.notify(notification, project)
 }

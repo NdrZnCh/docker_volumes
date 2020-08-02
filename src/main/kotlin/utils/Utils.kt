@@ -4,6 +4,7 @@ import com.intellij.openapi.progress.runBackgroundableTask
 import docker.communicator.Failure
 import docker.communicator.Result
 import docker.communicator.Success
+import docker.volumes.DockerVolumesBundle.messagePointer
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -24,7 +25,7 @@ fun runBackgroundProcess(processBuilder: ProcessBuilder, timeout: Long): Result<
         return Failure(e.message ?: "Error while running ${processBuilder.command().joinToString()} command")
     }
 
-    runBackgroundableTask("Execute Docker Command...", null, false) {
+    runBackgroundableTask(messagePointer("docker.background.task.title"), null, false) {
         process.waitFor(timeout, TimeUnit.SECONDS)
     }
 

@@ -6,6 +6,7 @@ import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.AddEditRemovePanel
 import com.intellij.ui.layout.ValidationInfoBuilder
 import com.intellij.ui.layout.panel
+import docker.volumes.DockerVolumesBundle.messagePointer
 import javax.swing.DefaultComboBoxModel
 import javax.swing.JComboBox
 import javax.swing.JComponent
@@ -50,7 +51,9 @@ class DockerVolumePairPanel(
 
         init {
             init()
-            this.title = if (option == null) "Add new pair" else "Edit pair"
+            this.title = if (option == null) {
+                messagePointer("docker.volume.pair.panel.dialog.addNew.title")
+            } else messagePointer("docker.volume.pair.panel.dialog.edit.title")
         }
 
         override fun createCenterPanel(): JComponent? {
@@ -70,15 +73,15 @@ class DockerVolumePairPanel(
             }
 
             return panel {
-                row("Name:") {
+                row(messagePointer("docker.volume.pair.panel.name.title")) {
                     nameComponent(growX, growY, pushY).apply {
                         withValidationOnApply(validator("([a-zA-Z0-9])+"))
-                        withErrorOnApplyIf("Key already defined. All keys must be unique.") {
+                        withErrorOnApplyIf(messagePointer("docker.volume.pair.panel.errors.keyAlreadyDefined")) {
                             alreadyDefinedKeys.contains(it.editor.item)
                         }
                     }.focused()
                 }
-                row("Value:") {
+                row(messagePointer("docker.volume.pair.panel.value.title")) {
                     valueComponent(growX, growY, pushY).withValidationOnApply(validator("([a-zA-Z0-9_.,{}=:/-])+"))
                 }
             }
@@ -95,8 +98,10 @@ class DockerVolumePairPanel(
                 }
 
                 when {
-                    value.isBlank() -> error("Can't be empty")
-                    !regex.toRegex().matches(value) -> error("Only '$regex' are allowed.")
+                    value.isBlank() -> error(messagePointer("docker.volume.pair.panel.errors.emptyValue"))
+                    !regex.toRegex().matches(value) -> {
+                        error(messagePointer("docker.volume.pair.panel.errors.regex", regex))
+                    }
                     else -> null
                 }
             }
@@ -107,7 +112,9 @@ class DockerVolumePairPanel(
 
         override fun getColumnCount(): Int = 2
 
-        override fun getColumnName(column: Int): String = if (column == 0) "Name" else "Value"
+        override fun getColumnName(column: Int): String = if (column == 0) {
+            messagePointer("docker.volume.pair.panel.table.name.title")
+        } else messagePointer("docker.volume.pair.panel.table.value.title")
 
         override fun getField(pair: Pair<String, String>, c: Int): String = if (c == 0) pair.first else pair.second
     }
