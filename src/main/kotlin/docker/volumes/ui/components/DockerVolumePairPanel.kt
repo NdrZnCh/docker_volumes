@@ -2,11 +2,18 @@ package docker.volumes.ui.components
 
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.ui.AddEditRemovePanel
 import com.intellij.ui.layout.ValidationInfoBuilder
 import com.intellij.ui.layout.panel
+import docker.communicator.Failure
+import docker.communicator.Result
+import docker.communicator.Success
+import docker.communicator.otherwise
+import docker.communicator.then
 import docker.volumes.DockerVolumesBundle.messagePointer
+import docker.volumes.ui.utils.checkRegex
+import docker.volumes.ui.utils.isNotEmpty
+import docker.volumes.ui.utils.toError
 import javax.swing.DefaultComboBoxModel
 import javax.swing.JComboBox
 import javax.swing.JComponent
@@ -57,15 +64,14 @@ class DockerVolumePairPanel(
         }
 
         override fun createCenterPanel(): JComponent? {
-            val valueComponent = ComboBox(DefaultComboBoxModel(possibleValues.values.firstOr { emptyArray() })).apply {
-                isEditable = true
+            val valueComponent = createEditableCombobox(possibleValues.values.firstOr { emptyArray() }).apply {
                 if (myValue.isNotBlank()) editor.item = myValue
                 addItemListener { myValue = it.item.toString() }
             }
 
-            val nameComponent = ComboBox(DefaultComboBoxModel(possibleValues.keys.toTypedArray())).apply {
-                isEditable = true
+            val nameComponent = createEditableCombobox(possibleValues.keys.toTypedArray()).apply {
                 if (myName.isNotBlank()) editor.item = myName
+
                 addItemListener {
                     myName = it.item.toString()
                     if (it.stateChange == 1) valueComponent.setNewArray(possibleValues[myName])
@@ -75,36 +81,44 @@ class DockerVolumePairPanel(
             return panel {
                 row(messagePointer("docker.volume.pair.panel.name.title")) {
                     nameComponent(growX, growY, pushY).apply {
-                        withValidationOnApply(validator("([a-zA-Z0-9])+"))
-                        withErrorOnApplyIf(messagePointer("docker.volume.pair.panel.errors.keyAlreadyDefined")) {
-                            alreadyDefinedKeys.contains(it.editor.item)
+                        withValidationOnApply {
+                            isNotEmpty(textValue()) then {
+                                checkRegex(it, "([a-zA-Z0-9])+")
+                            } then {
+                                assetThanIsUniqueName(it)
+                            } otherwise this::toError
                         }
                     }.focused()
                 }
                 row(messagePointer("docker.volume.pair.panel.value.title")) {
-                    valueComponent(growX, growY, pushY).withValidationOnApply(validator("([a-zA-Z0-9_.,{}=:/-])+"))
+                    valueComponent(growX, growY, pushY).apply {
+                        withValidationOnApply {
+                            isNotEmpty(textValue()) then {
+                                checkRegex(it, "([a-zA-Z0-9_.,{}=:/-])+")
+                            } otherwise this::toError
+                        }
+                    }
                 }
             }
         }
 
         fun getValue() = Pair(myName, myValue)
 
-        private fun <T : JComponent> validator(regex: String): ValidationInfoBuilder.(T) -> ValidationInfo? {
-            return {
-                val value = when (it) {
-                    is JTextField -> it.text
-                    is JComboBox<*> -> it.editor.item.toString()
-                    else -> throw UnsupportedOperationException("Unknown JComponent")
-                }
+        private fun createEditableCombobox(array: Array<String>): ComboBox<String> {
+            return ComboBox(DefaultComboBoxModel(array)).apply { isEditable = true }
+        }
 
-                when {
-                    value.isBlank() -> error(messagePointer("docker.volume.pair.panel.errors.emptyValue"))
-                    !regex.toRegex().matches(value) -> {
-                        error(messagePointer("docker.volume.pair.panel.errors.regex", regex))
-                    }
-                    else -> null
-                }
+        private fun assetThanIsUniqueName(value: String): Result<String> = when {
+            alreadyDefinedKeys.contains(value) -> {
+                Failure(messagePointer("docker.volume.pair.panel.errors.keyAlreadyDefined"))
             }
+            else -> Success(value)
+        }
+
+        private fun ValidationInfoBuilder.textValue(): String = when (val component: JComponent = this.component) {
+            is JTextField -> component.text
+            is JComboBox<*> -> component.editor.item.toString()
+            else -> throw UnsupportedOperationException("Unknown JComponent")
         }
     }
 

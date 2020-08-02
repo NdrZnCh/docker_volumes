@@ -3,9 +3,12 @@ package docker.volumes.ui.toolWindow.dialogs
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.layout.LCFlags
 import com.intellij.ui.layout.panel
-import docker.communicator.VolumeCreateArguments
+import docker.communicator.*
 import docker.volumes.DockerVolumesBundle.messagePointer
 import docker.volumes.ui.components.DockerVolumePairPanel
+import docker.volumes.ui.utils.checkRegex
+import docker.volumes.ui.utils.isNotEmpty
+import docker.volumes.ui.utils.toError
 import javax.swing.JComponent
 
 class CreateVolumeDialog(private val alreadyDefinedNames: List<String>) : DialogWrapper(true) {
@@ -41,27 +44,35 @@ class CreateVolumeDialog(private val alreadyDefinedNames: List<String>) : Dialog
         return panel(LCFlags.fillX) {
             row(messagePointer("docker.dialogs.createVolume.name.title")) {
                 textField({ myVolumeName }, { myVolumeName = it }).withValidationOnInput {
-                    val value = it.text
-
-                    when {
-                        value.isBlank() -> null
-                        value.length < 2 -> error(messagePointer("docker.dialogs.createVolume.errors.nameLength"))
-                        !"([a-zA-Z0-9])+".toRegex().matches(value) -> {
-                            error(messagePointer("docker.dialogs.createVolume.errors.nameRegex"))
-                        }
-                        alreadyDefinedNames.contains(value) -> {
-                            error(messagePointer("docker.dialogs.createVolume.errors.nameAlreadyDefined", value))
-                        }
-                        else -> null
+                    if (it.text.isBlank()) null else {
+                        checkNameLength(it.text) then { v ->
+                            checkRegex(v, "([a-zA-Z0-9])+")
+                        } then ::assertThatIsUniqueName otherwise this::toError
                     }
                 }.focused()
             }
             row(messagePointer("docker.dialogs.createVolume.driver.title")) {
-                textField({ myVolumeDriver }, { myVolumeDriver = it })
+                textField({ myVolumeDriver }, { myVolumeDriver = it }).withValidationOnInput {
+                    isNotEmpty(it.text) then { v ->
+                        checkRegex(v, "([a-zA-Z0-9])+")
+                    } otherwise this::toError
+                }
             }
             row { myOptionsPanel(growX, growY, pushY) }
             row { myLabelsPanel(growX, growY, pushY) }
         }.withPreferredSize(PANEL_WIDTH, PANEL_HEIGHT)
+    }
+
+    private fun assertThatIsUniqueName(value: String): Result<String> = when {
+        alreadyDefinedNames.contains(value) -> {
+            Failure(messagePointer("docker.dialogs.createVolume.errors.nameAlreadyDefined", value))
+        }
+        else -> Success(value)
+    }
+
+    private fun checkNameLength(value: String): Result<String> = when {
+        value.length < 2 -> Failure(messagePointer("docker.dialogs.createVolume.errors.nameLength"))
+        else -> Success(value)
     }
 
     override fun doOKAction() {
