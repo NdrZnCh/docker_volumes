@@ -139,7 +139,7 @@ private fun <T> JComboBox<T>.setNewArray(array: Array<T>?) {
 
     with((this.model as DefaultComboBoxModel)) {
         removeAllElements()
-        addAll(array.toList())
+        array.forEach { addElement(it) }
     }
 
     this.editor.item = array.firstOrNull()
