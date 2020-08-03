@@ -2,6 +2,9 @@ package docker.communicator
 
 import java.util.stream.Stream
 import kotlin.streams.toList
+import utils.Failure
+import utils.Result
+import utils.Success
 import utils.runBackgroundProcess
 
 private const val DOCKER_PROCESS_TIMEOUT: Long = 10

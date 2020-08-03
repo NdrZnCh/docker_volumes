@@ -10,6 +10,7 @@ import docker.volumes.ui.utils.checkRegex
 import docker.volumes.ui.utils.isNotEmpty
 import docker.volumes.ui.utils.toError
 import javax.swing.JComponent
+import utils.*
 
 class CreateVolumeDialog(private val alreadyDefinedNames: List<String>) : DialogWrapper(true) {
 

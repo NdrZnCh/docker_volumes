@@ -1,9 +1,6 @@
 package utils
 
 import com.intellij.openapi.progress.runBackgroundableTask
-import docker.communicator.Failure
-import docker.communicator.Result
-import docker.communicator.Success
 import docker.volumes.DockerVolumesBundle.messagePointer
 import java.io.IOException
 import java.util.concurrent.TimeUnit

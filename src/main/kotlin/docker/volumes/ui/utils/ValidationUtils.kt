@@ -1,10 +1,10 @@
 package docker.volumes.ui.utils
 
 import com.intellij.ui.layout.ValidationInfoBuilder
-import docker.communicator.Failure
-import docker.communicator.Result
-import docker.communicator.Success
 import docker.volumes.DockerVolumesBundle
+import utils.Failure
+import utils.Result
+import utils.Success
 
 fun isNotEmpty(value: String): Result<String> = when {
     value.isBlank() -> {

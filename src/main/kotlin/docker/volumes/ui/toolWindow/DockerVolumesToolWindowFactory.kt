@@ -5,10 +5,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.Content
-import docker.communicator.Failure
-import docker.communicator.Success
 import docker.communicator.docker
 import docker.volumes.notifyAboutError
+import utils.Failure
+import utils.Success
 
 class DockerVolumesToolWindowFactory : ToolWindowFactory, DumbAware {
 

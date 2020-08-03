@@ -1,4 +1,4 @@
-package docker.communicator
+package utils
 
 sealed class Result<T>
 

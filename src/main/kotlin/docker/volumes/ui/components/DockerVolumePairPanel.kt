@@ -5,11 +5,6 @@ import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.AddEditRemovePanel
 import com.intellij.ui.layout.ValidationInfoBuilder
 import com.intellij.ui.layout.panel
-import docker.communicator.Failure
-import docker.communicator.Result
-import docker.communicator.Success
-import docker.communicator.otherwise
-import docker.communicator.then
 import docker.volumes.DockerVolumesBundle.messagePointer
 import docker.volumes.ui.utils.checkRegex
 import docker.volumes.ui.utils.isNotEmpty
@@ -18,9 +13,14 @@ import javax.swing.DefaultComboBoxModel
 import javax.swing.JComboBox
 import javax.swing.JComponent
 import javax.swing.JTextField
+import utils.Failure
+import utils.Result
+import utils.Success
 import utils.filterIf
 import utils.firstOr
 import utils.minusIfNotNull
+import utils.otherwise
+import utils.then
 
 class DockerVolumePairPanel(
     title: String,
