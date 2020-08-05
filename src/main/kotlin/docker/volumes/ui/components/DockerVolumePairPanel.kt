@@ -84,9 +84,7 @@ class DockerVolumePairPanel(
                         withValidationOnApply {
                             isNotEmpty(textValue()) then {
                                 checkRegex(it, "([a-zA-Z0-9])+")
-                            } then {
-                                assetThanIsUniqueName(it)
-                            } otherwise this::toError
+                            } then ::assetThatIsUniqueName otherwise this::toError
                         }
                     }.focused()
                 }
@@ -108,7 +106,7 @@ class DockerVolumePairPanel(
             return ComboBox(DefaultComboBoxModel(array)).apply { isEditable = true }
         }
 
-        private fun assetThanIsUniqueName(value: String): Result<String> = when {
+        private fun assetThatIsUniqueName(value: String): Result<String> = when {
             alreadyDefinedKeys.contains(value) -> {
                 Failure(messagePointer("docker.volume.pair.panel.errors.keyAlreadyDefined"))
             }

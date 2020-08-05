@@ -8,14 +8,14 @@ import utils.Success
 
 fun isNotEmpty(value: String): Result<String> = when {
     value.isBlank() -> {
-        Failure(DockerVolumesBundle.messagePointer("docker.volume.pair.panel.errors.emptyValue"))
+        Failure(DockerVolumesBundle.messagePointer("docker.volume.ui.errors.emptyValue"))
     }
     else -> Success(value)
 }
 
 fun checkRegex(value: String, regex: String): Result<String> = when {
     !regex.toRegex().matches(value) -> {
-        Failure(DockerVolumesBundle.messagePointer("docker.volume.pair.panel.errors.regex", regex))
+        Failure(DockerVolumesBundle.messagePointer("docker.volume.ui.errors.regex", regex))
     }
     else -> Success(value)
 }

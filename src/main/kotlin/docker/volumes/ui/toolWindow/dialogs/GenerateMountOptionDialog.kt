@@ -11,6 +11,7 @@ import docker.volumes.ui.utils.bind
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import javax.swing.JComponent
+import utils.addIf
 
 class GenerateMountOptionDialog(private val selectedValue: DockerVolume) : DialogWrapper(false) {
 
@@ -61,7 +62,7 @@ class GenerateMountOptionDialog(private val selectedValue: DockerVolume) : Dialo
             add("--mount type=volume")
             add("source=${selectedValue.Name}")
             add("destination=${mountDestination.get()}")
-            if (isReadonlyMount.get()) add("readonly")
+            addIf(isReadonlyMount.get(), "readonly")
         }.joinToString()
     }
 

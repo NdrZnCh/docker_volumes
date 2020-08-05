@@ -13,6 +13,10 @@ inline fun <V> Array<V>?.firstOr(or: () -> V) = this?.firstOrNull() ?: or()
 
 inline fun <V> Collection<V>.firstOr(or: () -> V): V = if (this.isEmpty()) or() else this.first()
 
+fun <V> MutableList<V>.addIf(add: Boolean, element: V) {
+    if (add) this.add(element)
+}
+
 fun <V> Set<V>.minusIfNotNull(element: V?) = if (element != null) this.minus(element) else this
 
 fun runBackgroundProcess(processBuilder: ProcessBuilder, timeout: Long): Result<Process> {
